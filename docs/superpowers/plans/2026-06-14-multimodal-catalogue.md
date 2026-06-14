@@ -239,7 +239,7 @@ from pathlib import Path
 from lib import GEMINI_KEY, cache_get, cache_set, b64_image
 
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash")
+model = genai.GenerativeModel("gemini-2.5-flash-lite")
 ROOT = Path(__file__).parents[1] / "web/public"
 
 PROMPT = """You are a fashion cataloguer. Look at the product image and return STRICT JSON only:
@@ -375,7 +375,7 @@ const PROMPT = `You are a fashion cataloguer. Return STRICT JSON only:
 Lowercase concise values, JSON only.`;
 export async function geminiDescribe(base64Jpeg: string) {
   const r = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
     { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [
         { text: PROMPT },

@@ -18,7 +18,7 @@ PROMPT = """You are a fashion cataloguer. Look at the product image and return S
 Use concise lowercase values. material/shape: best visual guess. No markdown, JSON only."""
 
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash")
+model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
 
 def valid_attributes(value):
@@ -55,7 +55,7 @@ def extract(rec):
 
     for attempt in range(MAX_ATTEMPTS):
         try:
-            response = model.generate_content([PROMPT, image])
+            response = model.generate_content([PROMPT, image], request_options={"timeout": 60})
             attributes = parse_attributes(response.text)
             return cache_set("attrs", rec["id"], attributes)
         except Exception as exc:
