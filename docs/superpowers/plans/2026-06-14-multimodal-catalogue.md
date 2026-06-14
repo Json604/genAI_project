@@ -239,7 +239,7 @@ from pathlib import Path
 from lib import GEMINI_KEY, cache_get, cache_set, b64_image
 
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel("gemini-2.0-flash")
+model = genai.GenerativeModel("gemini-2.5-flash")
 ROOT = Path(__file__).parents[1] / "web/public"
 
 PROMPT = """You are a fashion cataloguer. Look at the product image and return STRICT JSON only:
@@ -375,7 +375,7 @@ const PROMPT = `You are a fashion cataloguer. Return STRICT JSON only:
 Lowercase concise values, JSON only.`;
 export async function geminiDescribe(base64Jpeg: string) {
   const r = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
     { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [
         { text: PROMPT },
@@ -583,4 +583,4 @@ export async function GET() {
 **Spec coverage:** Text (4.1) · Image (4.2) · Combined w/ blend (4.3, 3.1) · Attribute extraction (2.2, ≥4 keys) · AI descriptions (2.2, 4.4) · Analytics incl. gaps/abandonment/CTR (4.5, 5.3) · Brutalist UI on Vercel (5.x, 6.2) · Conversational refine (5.2 step 3) — all mapped.
 **Types consistent:** `jinaEmbed`, `blend(imageVec,textVec,alpha)`, RPC names `match_products_text|image|combined`, `vector(1024)` used identically across schema, libs, routes.
 **No placeholders:** concrete code/SQL/commands in every code step.
-**Risk notes:** confirm Jina `jina-clip-v2` dim is 1024 at Task 2.3 (first embed) — if different, update `vector(N)` in schema before upsert. Gemini model id `gemini-2.0-flash` (free); fall back to `gemini-1.5-flash` if quota/availability differs.
+**Risk notes:** confirm Jina `jina-clip-v2` dim is 1024 at Task 2.3 (first embed) — if different, update `vector(N)` in schema before upsert. Gemini model id `gemini-2.5-flash` (verified working on both keys; `gemini-2.0-flash` returns 429 quota-0 and `gemini-1.5-flash` is retired in v1beta).
