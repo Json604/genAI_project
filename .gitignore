@@ -9,3 +9,6 @@ __pycache__/
 *.pyc
 .DS_Store
 .vercel
+
+# codex scratch
+.codex_prompt_*.txt

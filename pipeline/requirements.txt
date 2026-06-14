@@ -1,0 +1,7 @@
+requests
+pandas
+pillow
+python-dotenv
+supabase
+kagglehub
+google-generativeai
