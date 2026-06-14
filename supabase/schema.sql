@@ -61,9 +61,14 @@ create or replace function match_products_image(
   limit match_count;
 $$;
 
--- Combined: caller passes a pre-blended query vector; match against image_embedding
+-- Combined (late fusion): score = alpha * image-similarity + (1-alpha) * text-similarity,
+-- each query vector compared to its own catalogue embedding. Lets the image drive visual
+-- style while the text drives described attributes (e.g. colour).
+drop function if exists match_products_combined(vector(1024), int);
 create or replace function match_products_combined(
-  query_embedding vector(1024),
+  image_query vector(1024),
+  text_query vector(1024),
+  alpha float default 0.5,
   match_count int default 24
 ) returns table (
   id text, name text, category text, base_colour text,
@@ -71,8 +76,10 @@ create or replace function match_products_combined(
 ) language sql stable as $$
   select p.id, p.name, p.category, p.base_colour, p.attributes,
          p.ai_description, p.image_path,
-         1 - (p.image_embedding <=> query_embedding) as score
+         alpha * (1 - (p.image_embedding <=> image_query))
+           + (1 - alpha) * (1 - (p.text_embedding <=> text_query)) as score
   from products p
-  order by p.image_embedding <=> query_embedding
+  order by alpha * (1 - (p.image_embedding <=> image_query))
+           + (1 - alpha) * (1 - (p.text_embedding <=> text_query)) desc
   limit match_count;
 $$;

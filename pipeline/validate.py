@@ -102,7 +102,7 @@ def test_image_search(
 
 
 def choose_combined_cases(
-    products: list[dict[str, Any]], count: int = 2
+    products: list[dict[str, Any]], count: int = 6
 ) -> list[tuple[dict[str, Any], str]]:
     by_article_type: dict[str, list[dict[str, Any]]] = {}
     for product in products:
@@ -188,15 +188,23 @@ def test_combined_search(
 
     for index, (source, target_colour) in enumerate(choose_combined_cases(products), 1):
         query = f"in {target_colour}"
-        payload_image = image_base64(str(source["id"]))
+        source_id = str(source["id"])
+        payload_image = image_base64(source_id)
+
+        # Uploading an exact catalogue image trivially self-matches (image-sim = 1.0),
+        # which is not the real use case. Exclude the source product so we compare the
+        # next-best matches the way a real uploaded photo would behave.
+        def top_excl(kind: str, payload: dict[str, Any]) -> list[dict[str, Any]]:
+            results = [r for r in post_results(session, kind, payload) if str(r["id"]) != source_id]
+            return results[:1]
+
         try:
-            image_top = post_results(session, "image", {"image": payload_image})[:1]
-            text_top = post_results(session, "text", {"query": query})[:1]
-            combined_top = post_results(
-                session,
+            image_top = top_excl("image", {"image": payload_image})
+            text_top = top_excl("text", {"query": query})
+            combined_top = top_excl(
                 "combined",
                 {"image": payload_image, "query": query, "alpha": 0.5},
-            )[:1]
+            )
             tops = {
                 "image": image_top[0] if image_top else None,
                 "text": text_top[0] if text_top else None,
