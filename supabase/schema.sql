@@ -25,12 +25,18 @@ create table if not exists searches (
   created_at timestamptz default now()
 );
 
--- Text search: cosine distance on text_embedding, with optional filters
+-- Text search: cosine distance on text_embedding, with optional attribute filters.
+-- Attribute filters use substring (ILIKE %v%) matching because the extracted
+-- values are free-text (e.g. "pink and red", "cotton blend").
+drop function if exists match_products_text(vector(1024), int, text, text);
 create or replace function match_products_text(
   query_embedding vector(1024),
   match_count int default 24,
   filter_colour text default null,
-  filter_category text default null
+  filter_category text default null,
+  filter_style text default null,
+  filter_material text default null,
+  filter_shape text default null
 ) returns table (
   id text, name text, category text, base_colour text,
   attributes jsonb, ai_description text, image_path text, score float
@@ -39,8 +45,13 @@ create or replace function match_products_text(
          p.ai_description, p.image_path,
          1 - (p.text_embedding <=> query_embedding) as score
   from products p
-  where (filter_colour is null or p.attributes->>'colour' ilike filter_colour)
+  where (filter_colour is null
+         or p.attributes->>'colour' ilike '%' || filter_colour || '%'
+         or p.base_colour ilike '%' || filter_colour || '%')
     and (filter_category is null or p.category ilike filter_category)
+    and (filter_style is null or p.attributes->>'style' ilike '%' || filter_style || '%')
+    and (filter_material is null or p.attributes->>'material' ilike '%' || filter_material || '%')
+    and (filter_shape is null or p.attributes->>'shape' ilike '%' || filter_shape || '%')
   order by p.text_embedding <=> query_embedding
   limit match_count;
 $$;

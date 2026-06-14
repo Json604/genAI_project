@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import AlphaSlider from "@/components/AlphaSlider";
 import FilterChips, { type SearchFilters } from "@/components/FilterChips";
 import ImageDrop from "@/components/ImageDrop";
@@ -14,6 +14,18 @@ interface SearchResponse {
   results?: Product[];
   error?: string;
 }
+
+interface DescribeResult {
+  colour?: string;
+  style?: string;
+  material?: string;
+  shape?: string;
+  category?: string;
+  description?: string;
+  error?: string;
+}
+
+const DESCRIBE_KEYS = ["colour", "style", "material", "shape", "category"] as const;
 
 function getSearchMode(query: string, imageBase64: string | null): SearchMode | null {
   if (imageBase64 && query.trim()) return "COMBINED";
@@ -34,8 +46,45 @@ export default function Home() {
   const [refine, setRefine] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [description, setDescription] = useState<DescribeResult | null>(null);
+  const [describing, setDescribing] = useState(false);
+  const resultsRef = useRef<HTMLElement>(null);
 
   const mode = getSearchMode(query, imageBase64);
+
+  function handleImageChange(next: string | null) {
+    setImageBase64(next);
+    setDescription(null);
+  }
+
+  async function runDescribe() {
+    if (!imageBase64) return;
+    setDescribing(true);
+    setDescription(null);
+    setError(null);
+    try {
+      const response = await fetch("/api/describe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageBase64 }),
+      });
+      const payload = (await response.json()) as DescribeResult;
+      if (!response.ok) throw new Error(payload.error || "Describe request failed");
+      setDescription(payload);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Describe request failed");
+    } finally {
+      setDescribing(false);
+    }
+  }
+
+  // Auto-scroll to the results whenever a new result set lands (search, refine,
+  // filter change, or "find similar"), once loading has settled.
+  useEffect(() => {
+    if (hasSearched && !loading) {
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [results, loading, hasSearched]);
 
   async function runSearch(nextQuery = query, nextFilters = filters, nextImage = imageBase64) {
     const nextMode = getSearchMode(nextQuery, nextImage);
@@ -118,7 +167,34 @@ export default function Home() {
           {imageBase64 && query.trim() ? <AlphaSlider value={alpha} onChange={setAlpha} /> : null}
         </div>
         <div className="border-t-[3px] border-ink py-8 lg:border-t-0 lg:pl-8">
-          <ImageDrop imageBase64={imageBase64} onImageChange={setImageBase64} />
+          <ImageDrop imageBase64={imageBase64} onImageChange={handleImageChange} />
+          {imageBase64 ? (
+            <div className="mt-4 space-y-4">
+              <button
+                type="button"
+                className="brut-button min-h-12 w-full px-4"
+                onClick={() => void runDescribe()}
+                disabled={describing}
+              >
+                {describing ? "DESCRIBING…" : "DESCRIBE THIS IMAGE"}
+              </button>
+              {description ? (
+                <div className="border-[3px] border-ink bg-paper p-4 shadow-brut">
+                  <h3 className="mb-2 text-sm font-bold uppercase text-accent">AI DESCRIPTION //</h3>
+                  <p className="leading-7">{description.description || "NO DESCRIPTION RETURNED."}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {DESCRIBE_KEYS.map((key) =>
+                      description[key] ? (
+                        <span key={key} className="border-[3px] border-ink px-2 py-1 text-xs font-bold uppercase">
+                          {key}: {description[key]}
+                        </span>
+                      ) : null,
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -127,7 +203,7 @@ export default function Home() {
       {error ? <div className="my-8 border-[3px] border-ink bg-accent p-5 font-bold uppercase">ERROR // {error}</div> : null}
       {loading ? <div className="my-10 border-[3px] border-ink bg-ink p-8 text-center text-3xl font-bold uppercase text-white shadow-brut-accent">LOADING…</div> : null}
 
-      <section className="py-10">
+      <section ref={resultsRef} className="scroll-mt-4 py-10">
         <div className="mb-8 flex items-end justify-between gap-4 border-b-[3px] border-ink pb-4">
           <h2 className="text-2xl font-bold uppercase sm:text-4xl">RESULTS // {results.length.toString().padStart(2, "0")}</h2>
           {hasSearched ? <span className="text-xs font-bold uppercase">QUERY: {lastQuery}</span> : null}
