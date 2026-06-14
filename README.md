@@ -2,7 +2,7 @@
 
 Search a fashion catalogue the way a customer thinks — by text, by photo, or both at once. Built for Assignment #8 (Multimodal).
 
-**Live demo:** _added after Vercel deploy_
+**Live demo:** https://gen-ai-project-eta.vercel.app/
 
 ---
 
