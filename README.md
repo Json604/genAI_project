@@ -42,7 +42,7 @@ web/                  Next.js 14 app (App Router, TS, Tailwind) — deployed to 
   public/catalogue/   400 product thumbnails (served statically)
 pipeline/             one-time Python: dataset prep, attribute extraction, embedding/upsert, validation
 supabase/schema.sql   tables + pgvector match functions
-docs/                 design spec, implementation plan, validation results
+VALIDATION.md         validation results vs the success metrics
 ```
 
 ## Local development
@@ -75,7 +75,7 @@ The Supabase schema (`supabase/schema.sql`) must be applied once via the Supabas
 
 ## Validation
 
-`pipeline/validate.py` checks the success metrics (image-search top-5 accuracy, combined-beats-single cases, ≥4 attributes per product). Results are written to `docs/validation-results.md`.
+`pipeline/validate.py` checks the success metrics (image-search top-5 accuracy, combined-beats-single cases, ≥4 attributes per product). Results are written to `VALIDATION.md`.
 
 ## Models
 
