@@ -2,6 +2,7 @@
 
 Date: 2026-06-14
 Base URL: `http://localhost:3000`
+Generated using the project's automated validation pipeline.
 
 ## Image Search
 
