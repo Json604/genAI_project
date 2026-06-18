@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jinaEmbed } from "@/lib/jina";
 import { supabase } from "@/lib/supabase";
+
 export const runtime = "nodejs";
 
 // Late fusion: score = alpha * image-similarity + (1 - alpha) * text-similarity,
@@ -15,7 +16,15 @@ export async function POST(req: NextRequest) {
     alpha,
     match_count: 24,
   });
+
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  await supabase.from("searches").insert({ query, search_type: "combined", filters: { alpha }, num_results: data.length });
+
+  await supabase.from("searches").insert({
+    query,
+    search_type: "combined",
+    filters: { alpha },
+    num_results: data.length,
+  });
+
   return NextResponse.json({ results: data });
 }
