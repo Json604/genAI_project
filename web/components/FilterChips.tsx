@@ -12,11 +12,31 @@ interface FilterChipsProps {
 }
 
 const GROUPS: { key: keyof SearchFilters; label: string; values: string[] }[] = [
-  { key: "colour", label: "COLOUR", values: ["black", "white", "red", "blue", "green", "pink", "purple", "yellow", "grey", "brown"] },
-  { key: "category", label: "CATEGORY", values: ["Apparel", "Accessories", "Footwear", "Personal Care"] },
-  { key: "style", label: "STYLE", values: ["casual", "formal", "classic", "sporty", "athletic", "modern", "traditional", "compact"] },
-  { key: "material", label: "MATERIAL", values: ["cotton", "leather", "metal", "plastic", "denim", "silk", "nylon", "fabric"] },
-  { key: "shape", label: "SHAPE", values: ["round", "rectangular", "straight", "fitted", "a-line", "slim fit", "cylindrical", "square"] },
+  {
+    key: "colour",
+    label: "COLOUR",
+    values: ["black", "white", "red", "blue", "green", "pink", "purple", "yellow", "grey", "brown"],
+  },
+  {
+    key: "category",
+    label: "CATEGORY",
+    values: ["Apparel", "Accessories", "Footwear", "Personal Care"],
+  },
+  {
+    key: "style",
+    label: "STYLE",
+    values: ["casual", "formal", "classic", "sporty", "athletic", "modern", "traditional", "compact"],
+  },
+  {
+    key: "material",
+    label: "MATERIAL",
+    values: ["cotton", "leather", "metal", "plastic", "denim", "silk", "nylon", "fabric"],
+  },
+  {
+    key: "shape",
+    label: "SHAPE",
+    values: ["round", "rectangular", "straight", "fitted", "a-line", "slim fit", "cylindrical", "square"],
+  },
 ];
 
 function chipClass(active: boolean) {
@@ -30,7 +50,7 @@ export default function FilterChips({ filters, onChange }: FilterChipsProps) {
     <section className="space-y-4 border-y-[3px] border-ink py-5">
       {GROUPS.map(({ key, label, values }) => (
         <div key={key} className="grid gap-3 sm:grid-cols-[110px_1fr]">
-          <h2 className="text-sm font-bold uppercase">{label} //</h2>
+          <h2 className="text-sm font-bold uppercase">{`${label} //`}</h2>
           <div className="flex flex-wrap gap-2">
             {values.map((value) => {
               const active = filters[key] === value;

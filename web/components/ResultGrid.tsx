@@ -25,7 +25,11 @@ interface ResultGridProps {
   onSelect: (product: Product) => void;
 }
 
-export default function ResultGrid({ results, hasSearched, onSelect }: ResultGridProps) {
+export default function ResultGrid({
+  results,
+  hasSearched,
+  onSelect,
+}: ResultGridProps) {
   if (hasSearched && results.length === 0) {
     return (
       <div className="shadow-brut-accent border-[3px] border-ink bg-paper p-8 text-center">
@@ -44,7 +48,13 @@ export default function ResultGrid({ results, hasSearched, onSelect }: ResultGri
           onClick={() => onSelect(product)}
         >
           <div className="relative aspect-square w-full border-b-[3px] border-ink bg-paper">
-            <Image src={product.image_path} alt={product.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-contain p-4" />
+            <Image
+              src={product.image_path}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-contain p-4"
+            />
           </div>
           <div className="flex min-h-32 flex-1 flex-col justify-between gap-4 p-4">
             <div className="flex items-start justify-between gap-3">

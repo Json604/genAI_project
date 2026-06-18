@@ -61,7 +61,13 @@ export default function ImageDrop({ imageBase64, onImageChange }: ImageDropProps
 
   return (
     <div className="space-y-3">
-      <input ref={inputRef} className="hidden" type="file" accept="image/*" onChange={handleFileChange} />
+      <input
+        ref={inputRef}
+        className="hidden"
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
       <div
         className="flex min-h-52 cursor-pointer flex-col items-center justify-center gap-4 border-[3px] border-dashed border-ink p-5 text-center transition-colors hover:bg-accent"
         onClick={() => inputRef.current?.click()}
@@ -95,7 +101,11 @@ export default function ImageDrop({ imageBase64, onImageChange }: ImageDropProps
           REMOVE IMAGE
         </button>
       ) : null}
-      {error ? <p className="border-[3px] border-ink bg-accent p-3 text-sm font-bold uppercase">{error}</p> : null}
+      {error ? (
+        <p className="border-[3px] border-ink bg-accent p-3 text-sm font-bold uppercase">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -23,7 +23,11 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
-export default function ProductModal({ product, onClose, onFindSimilar }: ProductModalProps) {
+export default function ProductModal({
+  product,
+  onClose,
+  onFindSimilar,
+}: ProductModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,23 +66,50 @@ export default function ProductModal({ product, onClose, onFindSimilar }: Produc
     }
   }
 
-  const attributes = Object.entries(product.attributes ?? {}).filter(([, value]) => Boolean(value));
+  const attributes = Object.entries(product.attributes ?? {}).filter(([, value]) =>
+    Boolean(value),
+  );
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-ink/75 p-4 sm:p-8" onMouseDown={handleBackdropClick} role="presentation">
-      <section className="shadow-brut-accent mx-auto grid max-w-5xl border-[3px] border-ink bg-paper lg:grid-cols-2" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-ink/75 p-4 sm:p-8"
+      onMouseDown={handleBackdropClick}
+      role="presentation"
+    >
+      <section
+        className="shadow-brut-accent mx-auto grid max-w-5xl border-[3px] border-ink bg-paper lg:grid-cols-2"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="product-modal-title"
+      >
         <div className="relative min-h-80 border-b-[3px] border-ink lg:min-h-[620px] lg:border-r-[3px] lg:border-b-0">
-          <Image src={product.image_path} alt={product.name} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-contain p-6" />
+          <Image
+            src={product.image_path}
+            alt={product.name}
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-contain p-6"
+          />
         </div>
         <div className="flex flex-col p-5 sm:p-8">
-          <button className="ml-auto border-[3px] border-ink bg-paper px-3 py-1 text-xl font-bold hover:bg-accent" type="button" onClick={onClose} aria-label="Close product details">
+          <button
+            className="ml-auto border-[3px] border-ink bg-paper px-3 py-1 text-xl font-bold hover:bg-accent"
+            type="button"
+            onClick={onClose}
+            aria-label="Close product details"
+          >
             X
           </button>
           <p className="mt-8 text-xs font-bold uppercase text-accent">PRODUCT // {product.id}</p>
-          <h2 id="product-modal-title" className="mt-2 text-3xl font-bold uppercase tracking-[-0.05em] sm:text-5xl">
+          <h2
+            id="product-modal-title"
+            className="mt-2 text-3xl font-bold uppercase tracking-[-0.05em] sm:text-5xl"
+          >
             {product.name}
           </h2>
-          <p className="mt-6 border-y-[3px] border-ink py-5 leading-7">{product.ai_description || "NO AI DESCRIPTION AVAILABLE."}</p>
+          <p className="mt-6 border-y-[3px] border-ink py-5 leading-7">
+            {product.ai_description || "NO AI DESCRIPTION AVAILABLE."}
+          </p>
           <div className="mt-6 flex flex-wrap gap-2">
             {attributes.map(([key, value]) => (
               <span key={key} className="border-[3px] border-ink px-3 py-2 text-xs font-bold uppercase">
@@ -86,8 +117,17 @@ export default function ProductModal({ product, onClose, onFindSimilar }: Produc
               </span>
             ))}
           </div>
-          {error ? <p className="mt-6 border-[3px] border-ink bg-accent p-3 text-sm font-bold uppercase">{error}</p> : null}
-          <button className="brut-button mt-auto min-h-14 px-5 py-3" type="button" onClick={findSimilar} disabled={loading}>
+          {error ? (
+            <p className="mt-6 border-[3px] border-ink bg-accent p-3 text-sm font-bold uppercase">
+              {error}
+            </p>
+          ) : null}
+          <button
+            className="brut-button mt-auto min-h-14 px-5 py-3"
+            type="button"
+            onClick={findSimilar}
+            disabled={loading}
+          >
             {loading ? "SEARCHING…" : "FIND SIMILAR"}
           </button>
         </div>

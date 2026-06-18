@@ -8,7 +8,13 @@ interface SearchBarProps {
   onSubmit: () => void;
 }
 
-export default function SearchBar({ query, loading, canSearch, onQueryChange, onSubmit }: SearchBarProps) {
+export default function SearchBar({
+  query,
+  loading,
+  canSearch,
+  onQueryChange,
+  onSubmit,
+}: SearchBarProps) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onSubmit();
@@ -26,7 +32,11 @@ export default function SearchBar({ query, loading, canSearch, onQueryChange, on
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
       />
-      <button className="brut-button min-h-16 px-8 text-lg" type="submit" disabled={!canSearch || loading}>
+      <button
+        className="brut-button min-h-16 px-8 text-lg"
+        type="submit"
+        disabled={!canSearch || loading}
+      >
         {loading ? "SEARCHING…" : "SEARCH"}
       </button>
     </form>
