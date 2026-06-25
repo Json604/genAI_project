@@ -6,7 +6,7 @@ Search a fashion catalogue the way a customer thinks — by text, by photo, or b
 
 ---
 
-## What it does
+## What it does is
 
 | Feature | How |
 |---|---|
